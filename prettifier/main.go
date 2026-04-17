@@ -4,8 +4,8 @@ import ("fmt"
 "os"
 "strings"
 "regexp"
+"time"
 )
-
 
 type Data struct {
 	name string
@@ -89,23 +89,47 @@ func ReadInput(FileName string) string {
 				}
 			}
 		}
+		
 	}
 	return line
 }
 
-func DateConversion(FileName string) string {
-	file, err := os.Open(FileName)
-	if err != nil {
-		fmt.Println("error opening file")
-		os.Exit(1)
+func ReadDate (FileName string) string {
+	reDate := regexp.MustCompile("D\\((.*?)T")
+		var DateRow[] string = reDate.FindAllString(FileName,-1)
+
+		for m := 0; m < len(DateRow) ; m++ {
+			timestr := strings.TrimSpace(DateRow[m][2:12])
+			layout := "2006-01-02"
+			t, err := time.Parse(layout, timestr)
+			if err != nil {
+				fmt.Println(err)
+			}
+			FormatedDate := t.Format("02 Jan 2006")
+			FileName = strings.Replace(FileName,DateRow[m][m:],FormatedDate,1)
+		}
+		fmt.Println(FileName)
+		return FileName
+
 	}
-	defer file.close()
-	scanner := bufio.NewScanner(file)
-	reDate := regexp.MustCompile("[0-2][0-9] | 3[01] | [0-9]T")
-	for scanner.scan(){
-		var DateFind[] string = reDate.FindAllString(line,-1)
+	
+func ReadTime (FileName string) string {
+	reTime := regexp.MustCompile("T(.*?)\\)")
+		var TimeRow[] string = reTime.FindAllString(FileName,-1)
+		
+		for m := 0; m < len(TimeRow) ; m++ {
+			timestr := strings.TrimSpace(TimeRow[m][1:11])
+			layout := "15:04"
+			t, err := time.Parse(layout, timestr)
+			if err != nil {
+				fmt.Println(err)
+			}
+			FormatedDate := t.Format("02 Jan 2006")
+			FileName = strings.Replace(FileName,TimeRow[m][m:11],FormatedDate,1)
+		}
+		fmt.Println(FileName)
+		return FileName
 	}
-}
 
 func main(){
 
@@ -116,11 +140,14 @@ func main(){
 
 	file, err := os.Open("airport-lookup.csv")
 	if err != nil {
-		fmt.Println("Error opening file")
+		fmt.Println("Error opening airport-lookup file")
 		os.Exit(1)
 	}
 	defer file.Close()
 	OutPutMessage := ReadInput("input.txt")
+	OutPutMessage = ReadDate(OutPutMessage)
+	OutPutMessage = ReadTime(OutPutMessage)
+
 	OutPut, err := os.Create("output.txt")
 	if err != nil {
 		fmt.Println("error creating file")
