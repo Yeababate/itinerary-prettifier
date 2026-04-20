@@ -42,6 +42,16 @@ func GetName(FileName string)[]Data{
 	return DataStorage
 
 }
+
+func ReadInput(inputFile string) string {
+	line, err := os.ReadFile(inputFile)
+	if err != nil {
+		fmt.Println("Input not found")
+		os.Exit(0)
+	}
+	return string(line)
+}
+
 func CheckExists(input string, lookup string) bool{  // ?
 	_,err := os.Stat(input)
 	if os.IsNotExist(err){
@@ -54,82 +64,112 @@ func CheckExists(input string, lookup string) bool{  // ?
 	return true
 }
 
-func ReadInput(FileName string) string {
-	file, err := os.Open(FileName)
-	if err != nil {
-		fmt.Println("Error opening file")
-		os.Exit(1)
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	reIATA := regexp.MustCompile(" #[A-Z]{3}")
-	reICAO := regexp.MustCompile("##[A-Z]{4}")
-	var alldata []Data = GetName("airport-lookup.csv")
-	var line string 
-	for scanner.Scan(){
-		line = scanner.Text()		
-		var SingleRowIATA [] string = reIATA.FindAllString(line,-1)
-		var SingleRowICAO [] string = reICAO.FindAllString(line,-1)
-
-		//var str string = ""
-		var i, j int
-
-		for i = 0; i < len(SingleRowIATA); i++ {
-			for k := 0; k < len(alldata); k++ {
-				if(SingleRowIATA[i][2:] == alldata[k].iata_code){
-					line = strings.Replace(line, SingleRowIATA[i][1:], alldata[k].name, 1)
-				}
+func GetIATACode(FileName string, Csv string) string {
+	reIATA := regexp.MustCompile("#[A-Z]{3}")
+	SingleRowIATA := reIATA.FindAllString(FileName,-1)
+	alldata := GetName(Csv)
+	for i := 0; i < len(SingleRowIATA); i++ {
+		for k := 0; k < len(alldata); k++ {
+			if(SingleRowIATA[i][1:] == alldata[k].iata_code){
+				FileName = strings.Replace(FileName, SingleRowIATA[i], alldata[k].name, 1)
 			}
 		}
-
-		for j = 0; j < len(SingleRowICAO); j++ {
-			for l := 0; l < len(alldata); l++{
-				if (SingleRowICAO[j][2:] == alldata[l].icao_code){
-					line = strings.Replace(line, SingleRowICAO[j], alldata[l].name, 1)
-				}
-			}
-		}
-		
 	}
-	return line
+	return FileName
 }
 
-func ReadDate (FileName string) string {
-	reDate := regexp.MustCompile("D\\((.*?)T")
-		var DateRow[] string = reDate.FindAllString(FileName,-1)
-
-		for m := 0; m < len(DateRow) ; m++ {
-			timestr := strings.TrimSpace(DateRow[m][2:12])
-			layout := "2006-01-02"
-			t, err := time.Parse(layout, timestr)
-			if err != nil {
-				fmt.Println(err)
+func GetICAOCode(FileName string, Csv string) string {
+	reICAO := regexp.MustCompile("##[A-Z]{4}")
+	SingleRowICAO := reICAO.FindAllString(FileName,-1)
+	alldata := GetName(Csv)
+	for i := 0; i < len(SingleRowICAO); i++ {
+		for k := 0; k < len(alldata); k++ {
+			if(SingleRowICAO[i][2:] == alldata[k].icao_code){
+				FileName = strings.Replace(FileName, SingleRowICAO[i], alldata[k].name, 1)
 			}
-			FormatedDate := t.Format("02 Jan 2006")
-			FileName = strings.Replace(FileName,DateRow[m][m:],FormatedDate,1)
 		}
-		fmt.Println(FileName)
-		return FileName
+	}
+	return FileName
+}
 
-	}
-	
-func ReadTime (FileName string) string {
-	reTime := regexp.MustCompile("T(.*?)\\)")
-		var TimeRow[] string = reTime.FindAllString(FileName,-1)
-		
-		for m := 0; m < len(TimeRow) ; m++ {
-			timestr := strings.TrimSpace(TimeRow[m][1:11])
-			layout := "15:04"
-			t, err := time.Parse(layout, timestr)
-			if err != nil {
-				fmt.Println(err)
-			}
-			FormatedDate := t.Format("02 Jan 2006")
-			FileName = strings.Replace(FileName,TimeRow[m][m:11],FormatedDate,1)
+func ReadDate (OutPut string) string{
+	reDate := regexp.MustCompile("D\\((.*?)\\)")
+	Date := reDate.FindAllString(OutPut, -1)
+	for i := 0; i < len(Date); i ++ {
+		d, err := time.Parse("2006-01-02", Date[i][2:12])
+		if err != nil {
+			continue
 		}
-		fmt.Println(FileName)
-		return FileName
+		FormaredDate := d.Format("02 Jan 2006")
+		OutPut = strings.Replace(OutPut, Date[i], FormaredDate, 1)
 	}
+	return OutPut
+}
+
+func Read12hrTime (OutPut string) string{
+	reTime12 := regexp.MustCompile("T12\\((.*?)\\)")
+	Time12hr := reTime12.FindAllString(OutPut, -1)
+	for i := 0; i < len(Time12hr); i++ {
+		t, err := time.Parse("2006-01-02T15:04-07:00", Time12hr[i][4:26])
+		if err != nil {
+			continue
+		}
+		FormaredTime := t.Format("03:04PM (-07:00)")
+		OutPut = strings.Replace(OutPut, Time12hr[i], FormaredTime, 1)
+	}
+	return OutPut
+}
+
+func Read24hrTime (OutPut string) string{
+	reTime24 := regexp.MustCompile(`T24\((.*\d)\)`)
+	Time24hr := reTime24.FindAllString(OutPut, -1)
+	for i := 0; i < len(Time24hr); i++ {
+		t, err := time.Parse("2006-01-02T15:04-07:00", Time24hr[i][4:26])
+		if err != nil {
+			continue
+		}
+		FormaredTime := t.Format("15:04 (-07:00)")
+		OutPut = strings.Replace(OutPut,Time24hr[i], FormaredTime , 1)
+	}
+	return OutPut
+}
+
+func Read12ZTime (OutPut string) string{
+	reTime12z := regexp.MustCompile("T12\\((.*[Zz])\\)")
+	Time12Z := reTime12z.FindAllString(OutPut, -1)
+	for i := 0; i < len(Time12Z); i++ {
+		t, err := time.Parse("2006-01-02T15:04Z", Time12Z[i][4:21])
+		if err != nil {
+			continue
+		}
+		FormaredTime := t.Format("03:04PM (+00:00)")
+		OutPut = strings.Replace(OutPut, Time12Z[i], FormaredTime , 1)
+	}
+	return OutPut
+}
+
+func Read24ZTime (OutPut string) string{
+	reTime24z := regexp.MustCompile("T24\\((.*[Zz])\\)")
+	Time24Z := reTime24z.FindAllString(OutPut, -1)
+	for i := 0; i < len(Time24Z); i++ {
+		t, err := time.Parse("2006-01-02T15:04Z", Time24Z[i][4:21])
+		if err != nil {
+			continue
+		}
+		FormaredTime := t.Format("15:04 (+00:00)")
+		OutPut = strings.Replace(OutPut, Time24Z[i], FormaredTime , 1)
+	}
+	return OutPut
+}
+
+func WriteToOutput(name string, output string){
+	file,_ := os.OpenFile(name, os.O_CREATE|os.O_WRONLY, 0644)
+	_, err := file.WriteString(strings.TrimSpace(output))
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+}
 
 func main(){
 
@@ -144,21 +184,15 @@ func main(){
 		os.Exit(1)
 	}
 	defer file.Close()
-	OutPutMessage := ReadInput("input.txt")
+	input := os.Args[1]
+	Csv := os.Args[2]
+	OutPutMessage := ReadInput(input)
+	OutPutMessage = GetICAOCode(OutPutMessage, Csv)
+	OutPutMessage = GetIATACode(OutPutMessage, Csv)
 	OutPutMessage = ReadDate(OutPutMessage)
-	OutPutMessage = ReadTime(OutPutMessage)
-
-	OutPut, err := os.Create("output.txt")
-	if err != nil {
-		fmt.Println("error creating file")
-		os.Exit(1)
-	}
-	defer file.Close()
-	_, err = OutPut.WriteString(OutPutMessage)
-	if err != nil {
-		fmt.Println("error writing file")
-		os.Exit(1)
-	}
-	
-
+	OutPutMessage = Read12ZTime(OutPutMessage)
+	OutPutMessage = Read24ZTime(OutPutMessage)
+	OutPutMessage = Read12hrTime(OutPutMessage)
+	OutPutMessage = Read24hrTime(OutPutMessage)
+	WriteToOutput("output.txt", OutPutMessage)
 }
