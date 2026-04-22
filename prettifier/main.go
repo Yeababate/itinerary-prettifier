@@ -40,28 +40,31 @@ func GetName(FileName string)[]Data{
 		DataStorage = append(DataStorage, EachData)
 	}
 	return DataStorage
-
 }
 
 func ReadInput(inputFile string) string {
 	line, err := os.ReadFile(inputFile)
 	if err != nil {
-		fmt.Println("Input not found")
+		fmt.Println("Error Reading")
 		os.Exit(0)
 	}
-	return string(line)
+	return strings.TrimSpace(string(line))
 }
 
-func CheckExists(input string, lookup string) bool{  // ?
-	_,err := os.Stat(input)
-	if os.IsNotExist(err){
-		fmt.Println("Input not found.")
+func Malformed(Column Data) bool{
+	name := strings.TrimSpace(Column.name)
+	iso_country := strings.TrimSpace(Column.iso_country)
+	municipality := strings.TrimSpace(Column.municipality)
+	icao_code := strings.TrimSpace(Column.icao_code)
+	iata_code := strings.TrimSpace(Column.iata_code)
+	coordinates := strings.TrimSpace(Column.coordinates)
+	var data = []string{name, iso_country, municipality, icao_code, iata_code, coordinates}
+	for _, val := range data{
+		if strings.TrimSpace(val) == "" {
+			return true
+		}
 	}
-	_, err = os.Stat(lookup)
-	if os.IsNotExist(err){
-		fmt.Println("Airport lookup not found.")
-	}
-	return true
+	return false
 }
 
 func GetIATACode(FileName string, Csv string) string {
@@ -71,6 +74,10 @@ func GetIATACode(FileName string, Csv string) string {
 	for i := 0; i < len(SingleRowIATA); i++ {
 		for k := 0; k < len(alldata); k++ {
 			if(SingleRowIATA[i][1:] == alldata[k].iata_code){
+				if Malformed(alldata[k]) == true{
+					fmt.Println("Airport lookup malformed")
+					break
+				}
 				FileName = strings.Replace(FileName, SingleRowIATA[i], alldata[k].name, 1)
 			}
 		}
@@ -85,7 +92,25 @@ func GetICAOCode(FileName string, Csv string) string {
 	for i := 0; i < len(SingleRowICAO); i++ {
 		for k := 0; k < len(alldata); k++ {
 			if(SingleRowICAO[i][2:] == alldata[k].icao_code){
+				if Malformed(alldata[k]) == true{
+				fmt.Println("Airport lookup malformed")
+				break
+			}
 				FileName = strings.Replace(FileName, SingleRowICAO[i], alldata[k].name, 1)
+			}
+		}
+	}
+	return FileName
+}
+
+func GetCityName(FileName string, Csv string) string {
+	reCity := regexp.MustCompile("\\*#[A-Z]{3}")
+	SingleRowCity := reCity.FindAllString(FileName,-1)
+	alldata := GetName(Csv)
+	for i := 0; i < len(SingleRowCity); i++ {
+		for k := 0; k < len(alldata); k++ {
+			if(SingleRowCity[i][2:] == alldata[k].iata_code){
+				FileName = strings.Replace(FileName, SingleRowCity[i], alldata[k].municipality, 1)
 			}
 		}
 	}
@@ -162,8 +187,16 @@ func Read24ZTime (OutPut string) string{
 	return OutPut
 }
 
+func VerticalSpaces (output string) string {
+	reVertical:= regexp.MustCompile(`\\v|\\f|\\r`)
+	output = reVertical.ReplaceAllString(output, "\n")
+
+	reLimit := regexp.MustCompile(`\n{3,}`)
+	return reLimit.ReplaceAllString(output, "\n\n")
+}
+
 func WriteToOutput(name string, output string){
-	file,_ := os.OpenFile(name, os.O_CREATE|os.O_WRONLY, 0644)
+	file,_ := os.OpenFile(name, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	_, err := file.WriteString(strings.TrimSpace(output))
 	if err != nil {
 		panic(err)
@@ -171,22 +204,47 @@ func WriteToOutput(name string, output string){
 	defer file.Close()
 }
 
+func CheckExists(input string, csv string) bool{  // ?
+	_,err := os.Stat(input)
+	if os.IsNotExist(err){
+		fmt.Println("Input not found.")
+		return false
+	}
+	_, err = os.Stat(csv)
+	if os.IsNotExist(err){
+		fmt.Println("Airport lookup not found.")
+		return false
+	}
+	return true
+}
+
 func main(){
-
-	CheckExists(os.Args[1],os.Args[2])
-	if len(os.Args) != 3{
-		fmt.Println("Input the right amount of arguments")
+	if len(os.Args) != 4{
+		if(os.Args[1] == "-h" || os.Args[1] == "H") {
+			fmt.Println("itinerary usage:\ngo run . ./input.txt ./output.txt ./airport-lookup.csv")
+			return
+		}
+		fmt.Println("itinerary usage:\ngo run . ./input.txt ./output.txt ./airport-lookup.csv")
+		return
 	}
 
-	file, err := os.Open("airport-lookup.csv")
-	if err != nil {
-		fmt.Println("Error opening airport-lookup file")
-		os.Exit(1)
+	if CheckExists(os.Args[1],os.Args[3]) == false {
+		return
 	}
-	defer file.Close()
+
+	// file, err := os.Open("airport-lookup.csv")
+	// if err != nil {
+	// 	fmt.Println("Airport lookup not found")
+	// 	os.Exit(1)
+	// }
+	// defer file.Close()
+
 	input := os.Args[1]
-	Csv := os.Args[2]
+	Csv := os.Args[3]
+	output := os.Args[2]
 	OutPutMessage := ReadInput(input)
+	OutPutMessage = VerticalSpaces(OutPutMessage)
+	OutPutMessage = GetCityName(OutPutMessage, Csv)
 	OutPutMessage = GetICAOCode(OutPutMessage, Csv)
 	OutPutMessage = GetIATACode(OutPutMessage, Csv)
 	OutPutMessage = ReadDate(OutPutMessage)
@@ -194,5 +252,5 @@ func main(){
 	OutPutMessage = Read24ZTime(OutPutMessage)
 	OutPutMessage = Read12hrTime(OutPutMessage)
 	OutPutMessage = Read24hrTime(OutPutMessage)
-	WriteToOutput("output.txt", OutPutMessage)
+	WriteToOutput(output, OutPutMessage)
 }
