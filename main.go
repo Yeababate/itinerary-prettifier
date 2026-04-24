@@ -7,6 +7,12 @@ import ("fmt"
 "time"
 )
 
+var Reset = "\033[0m"
+var Red = "\033[31m"
+var Green = "\033[32m"
+var Blue = "\033[34m"
+var Magenta = "\033[35m"
+
 type Data struct {
 	name string
 	iso_country string
@@ -19,7 +25,7 @@ type Data struct {
 func GetName(FileName string)[]Data{
 	file, err := os.Open(FileName)
 	if err != nil {
-		fmt.Println("Error opening file")
+		fmt.Println(Red + "Error opening file" + Reset)
 		os.Exit(1)
 	}
 	defer file.Close()
@@ -45,7 +51,7 @@ func GetName(FileName string)[]Data{
 func ReadInput(inputFile string) string {
 	line, err := os.ReadFile(inputFile)
 	if err != nil {
-		fmt.Println("Error Reading")
+		fmt.Println(Red + "Error Reading" + Reset)
 		os.Exit(0)
 	}
 	return strings.TrimSpace(string(line))
@@ -59,8 +65,9 @@ func Malformed(Column Data) bool{
 	iata_code := strings.TrimSpace(Column.iata_code)
 	coordinates := strings.TrimSpace(Column.coordinates)
 	var data = []string{name, iso_country, municipality, icao_code, iata_code, coordinates}
+
 	for _, val := range data{
-		if strings.TrimSpace(val) == "" {
+		if strings.TrimSpace(val) == "" {               
 			return true
 		}
 	}
@@ -75,8 +82,8 @@ func GetIATACode(FileName string, Csv string) string {
 		for k := 0; k < len(alldata); k++ {
 			if(SingleRowIATA[i][1:] == alldata[k].iata_code){
 				if Malformed(alldata[k]) == true{
-					fmt.Println("Airport lookup malformed")
-					break
+					fmt.Println(Red + "Airport lookup malformed" + Reset)
+					os.Exit(0)
 				}
 				FileName = strings.Replace(FileName, SingleRowIATA[i], alldata[k].name, 1)
 			}
@@ -93,8 +100,8 @@ func GetICAOCode(FileName string, Csv string) string {
 		for k := 0; k < len(alldata); k++ {
 			if(SingleRowICAO[i][2:] == alldata[k].icao_code){
 				if Malformed(alldata[k]) == true{
-				fmt.Println("Airport lookup malformed")
-				break
+				fmt.Println(Red + "Airport lookup malformed" + Reset)
+				os.Exit(0)
 			}
 				FileName = strings.Replace(FileName, SingleRowICAO[i], alldata[k].name, 1)
 			}
@@ -204,15 +211,15 @@ func WriteToOutput(name string, output string){
 	defer file.Close()
 }
 
-func CheckExists(input string, csv string) bool{  // ?
+func CheckExists(input string, csv string) bool{
 	_,err := os.Stat(input)
 	if os.IsNotExist(err){
-		fmt.Println("Input not found.")
+		fmt.Println(Red + "Input not found." + Reset)
 		return false
 	}
 	_, err = os.Stat(csv)
 	if os.IsNotExist(err){
-		fmt.Println("Airport lookup not found.")
+		fmt.Println(Red + "Airport lookup not found." + Reset)
 		return false
 	}
 	return true
@@ -220,24 +227,17 @@ func CheckExists(input string, csv string) bool{  // ?
 
 func main(){
 	if len(os.Args) != 4{
-		if(os.Args[1] == "-h" || os.Args[1] == "H") {
-			fmt.Println("itinerary usage:\ngo run . ./input.txt ./output.txt ./airport-lookup.csv")
+		if(os.Args[1] == "-h" || os.Args[1] == "-H") {
+			fmt.Println(Green + "itinerary usage:\ngo run . ./input.txt ./output.txt ./airport-lookup.csv" + Reset)
 			return
 		}
-		fmt.Println("itinerary usage:\ngo run . ./input.txt ./output.txt ./airport-lookup.csv")
+		fmt.Println(Green + "itinerary usage:\ngo run . ./input.txt ./output.txt ./airport-lookup.csv" + Reset)
 		return
 	}
 
 	if CheckExists(os.Args[1],os.Args[3]) == false {
 		return
 	}
-
-	// file, err := os.Open("airport-lookup.csv")
-	// if err != nil {
-	// 	fmt.Println("Airport lookup not found")
-	// 	os.Exit(1)
-	// }
-	// defer file.Close()
 
 	input := os.Args[1]
 	Csv := os.Args[3]
@@ -253,4 +253,5 @@ func main(){
 	OutPutMessage = Read12hrTime(OutPutMessage)
 	OutPutMessage = Read24hrTime(OutPutMessage)
 	WriteToOutput(output, OutPutMessage)
+	fmt.Println(Magenta + OutPutMessage + Reset)
 }
