@@ -132,8 +132,8 @@ func ReadDate (OutPut string) string{
 		if err != nil {
 			continue
 		}
-		FormaredDate := d.Format("02 Jan 2006")
-		OutPut = strings.Replace(OutPut, Date[i], FormaredDate, 1)
+		FormatedDate := d.Format("02 Jan 2006")
+		OutPut = strings.Replace(OutPut, Date[i], FormatedDate, 1)
 	}
 	return OutPut
 }
@@ -146,8 +146,8 @@ func Read12hrTime (OutPut string) string{
 		if err != nil {
 			continue
 		}
-		FormaredTime := t.Format("03:04PM (-07:00)")
-		OutPut = strings.Replace(OutPut, Time12hr[i], FormaredTime, 1)
+		FormatedTime := t.Format("03:04PM (-07:00)")
+		OutPut = strings.Replace(OutPut, Time12hr[i], FormatedTime, 1)
 	}
 	return OutPut
 }
@@ -160,8 +160,8 @@ func Read24hrTime (OutPut string) string{
 		if err != nil {
 			continue
 		}
-		FormaredTime := t.Format("15:04 (-07:00)")
-		OutPut = strings.Replace(OutPut,Time24hr[i], FormaredTime , 1)
+		FormatedTime := t.Format("15:04 (-07:00)")
+		OutPut = strings.Replace(OutPut,Time24hr[i], FormatedTime , 1)
 	}
 	return OutPut
 }
@@ -174,8 +174,8 @@ func Read12ZTime (OutPut string) string{
 		if err != nil {
 			continue
 		}
-		FormaredTime := t.Format("03:04PM (+00:00)")
-		OutPut = strings.Replace(OutPut, Time12Z[i], FormaredTime , 1)
+		FormatedTime := t.Format("03:04PM (+00:00)")
+		OutPut = strings.Replace(OutPut, Time12Z[i], FormatedTime , 1)
 	}
 	return OutPut
 }
@@ -188,8 +188,8 @@ func Read24ZTime (OutPut string) string{
 		if err != nil {
 			continue
 		}
-		FormaredTime := t.Format("15:04 (+00:00)")
-		OutPut = strings.Replace(OutPut, Time24Z[i], FormaredTime , 1)
+		FormatedTime := t.Format("15:04 (+00:00)")
+		OutPut = strings.Replace(OutPut, Time24Z[i], FormatedTime , 1)
 	}
 	return OutPut
 }

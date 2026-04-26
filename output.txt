@@ -1,9 +1,7 @@
-<<<<<<< HEAD
-Your flight departs from Nauru International Airport, and your destination is Honiara International Airport.
+Your flight departs from Hannover Airport, and your destination is Bremen Airport.
 
-our flight departs from Nauru International Airport, and your destination is Honiara International Airport.
-=======
-Your flight departs from Nauru International Airport, and your destination is Alxa Left Banner Bayanhot Airport.
+
+
 1. 09 May 2022
 2. 07:18PM (-02:00)
 3. 02:54PM (+00:00)
@@ -13,4 +11,3 @@ Your flight departs from Nauru International Airport, and your destination is Al
 7. 17:54 (+00:00)
 8. 15:29 (-11:00)
 9. 21:43 (+00:00)
->>>>>>> b0662c5 (made a small correction)

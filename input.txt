@@ -1,15 +1,7 @@
-<<<<<<< HEAD
-Your flight departs from #INU, and your destination is ##AGGH.
+Your flight departs from #HAJ, and your destination is ##EDDW.
 
 
 
-
-
-
-
-our flight departs from #INU, and your destination is ##AGGH.
-=======
-Your flight departs from #INU, and your destination is ##ZBAL.
 1. D(2022-05-09T08:07Z)
 2. T12(2069-04-24T19:18-02:00)
 3. T12(2080-05-04T14:54Z)
@@ -19,4 +11,3 @@ Your flight departs from #INU, and your destination is ##ZBAL.
 7. T24(2084-04-13T17:54Z)
 8. T24(2024-07-23T15:29-11:00)
 9. T24(2042-09-01T21:43Z)
->>>>>>> b0662c5 (made a small correction)
