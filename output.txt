@@ -1,6 +1,16 @@
-Your flight departs from Hannover Airport, and your destination is Bremen Airport.
+TEST INPUT:
 
+(only one blank space should be above and below this line)
 
+NAME REPLACEMENT:
+
+Your flight departs from Hannover Airport, and your destination is Bremen Airport. (both should be replaced)
+Your flight departs from Hannover, and your destination is *Bremen Airport. (both should be replaced by city name)
+Flight from Hannover Airport to #Hannover AirportW. (ony first should be replaced).
+
+London Heathrow Airport London Heathrow Airport
+Dubai International Airport Dubai International Airport
+Los Angeles International Airport Los Angeles International Airport
 
 1. 09 May 2022
 2. 07:18PM (-02:00)

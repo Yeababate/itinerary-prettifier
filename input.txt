@@ -1,6 +1,19 @@
-Your flight departs from #HAJ, and your destination is ##EDDW.
+TEST INPUT:
 
 
+
+
+(only one blank space should be above and below this line)
+
+
+
+NAME REPLACEMENT:
+
+Your flight departs from #HAJ, and your destination is ##EDDW. (both should be replaced)
+Your flight departs from *#HAJ, and your destination is *##EDDW. (both should be replaced by city name)
+Flight from #HAJ to ##HAJW. (ony first should be replaced).
+
+##EGLL #LHR#DXB ##OMDB##KLAX #LAX
 
 1. D(2022-05-09T08:07Z)
 2. T12(2069-04-24T19:18-02:00)
@@ -11,3 +24,4 @@ Your flight departs from #HAJ, and your destination is ##EDDW.
 7. T24(2084-04-13T17:54Z)
 8. T24(2024-07-23T15:29-11:00)
 9. T24(2042-09-01T21:43Z)
+
