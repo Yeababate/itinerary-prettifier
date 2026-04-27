@@ -10,7 +10,6 @@ import ("fmt"
 var Reset = "\033[0m"
 var Red = "\033[31m"
 var Green = "\033[32m"
-var Blue = "\033[34m"
 var Magenta = "\033[35m"
 
 type Data struct {
