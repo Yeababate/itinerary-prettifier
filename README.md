@@ -16,21 +16,16 @@ This Go program processes an input text file containing encoded itinerary inform
   - Supports both timezone offsets and `Z` (UTC)  
 - 🧹 Normalize vertical spacing (remove excessive blank lines)
 
----
-
-## Project Structure
-├── main.go
-├── input.txt
-├── output.txt
-└── airport-lookup.csv
 
 
 ---
 
 ## CSV Format
 The airport lookup file must follow this structure:
+name,iso_country,municipality,icao_code,iata_code,coordinates
 
 Example:
+Hongyuan Airport,CN,Aba,ZUHY,AHJ,"102.35224, 32.53154"
 
 ---
 
@@ -40,25 +35,25 @@ Example:
 go run . ./input.txt ./output.txt ./airport-lookup.csv
 
 ### Help: 
-go run . -h
+go run . -h/-H
 
 ---
 
 ## Input Format Examples
 
 ### Airport Codes
-#HEL → Helsinki Vantaa Airport
-##EFHK → Helsinki Vantaa Airport
-*#HEL → Helsinki
+#HEL → IATA code → Hongyuan Airport
+##EFHK → ICAO code → Hongyuan Airport
+*#HEL → Aba
 
 ### Date 
-D(2024-03-15) → 15 Mar 2024
+D(2026-04-27) → 27 Apr 2026
 
 ### Time 
-T12(2024-03-15T14:30+02:00) → 02:30PM (+02:00)
-T24(2024-03-15T14:30+02:00) → 14:30 (+02:00)
-T12(2024-03-15T14:30Z) → 02:30PM (+00:00)
-T24(2024-03-15T14:30Z) → 14:30 (+00:00)
+- D(2022-05-09T08:07Z) → 09 May 2022
+- T12(2069-04-24T19:18-02:00) → 07:18PM (-02:00)
+- T12(2080-05-04T14:54Z) → 02:54PM (+00:00)
+- T24(2032-07-17T04:08+13:00) → 04:08 (+13:00)
 
 ---
 
@@ -84,6 +79,3 @@ T24(2024-03-15T14:30Z) → 14:30 (+00:00)
 4. Check formatted output in `output.txt`.
 
 ---
-
-## License
-This project is open-source and free to use.
