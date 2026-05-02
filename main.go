@@ -225,7 +225,7 @@ func Read24ZTime (OutPut string) string{
 }
 
 func VerticalSpaces (output string) string {
-	reVertical:= regexp.MustCompile(`\v|\f|\r\n`)
+	reVertical := regexp.MustCompile(`\r\n|\r|\v|\f`)
 	output = reVertical.ReplaceAllString(output, "\n")
 
 	reLimit := regexp.MustCompile(`\n{3,}`)
