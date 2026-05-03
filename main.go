@@ -51,6 +51,10 @@ func GetName(FileName string)[]Data{
 			iata_code: Column[4],
 			coordinates: Column[5],
 		}
+		if EachData.name == "" || EachData.iso_country == "" || EachData.municipality == "" || EachData.icao_code == "" || EachData.iata_code == "" || EachData.coordinates == ""{
+			fmt.Println(Red + Bold + "Airport lookup malformed" + Reset)
+			os.Exit(0)
+		} 
 		DataStorage = append(DataStorage, EachData)
 	}
 	return DataStorage
