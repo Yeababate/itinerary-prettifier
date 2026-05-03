@@ -94,6 +94,10 @@ func GetIATACode(FileName string, Csv string) string {
 	SingleRowIATA := reIATA.FindAllString(FileName,-1)
 	alldata := GetName(Csv)
 	for i := 0; i < len(SingleRowIATA); i++ {
+		match := SingleRowIATA[i]
+		if strings.Contains(FileName, "#" + match){
+			continue
+		}
 		for k := 0; k < len(alldata); k++ {
 			if(SingleRowIATA[i][1:] == alldata[k].iata_code){
 				if Malformed(alldata[k]) == true{
