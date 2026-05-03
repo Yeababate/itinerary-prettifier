@@ -40,7 +40,7 @@ func GetName(FileName string)[]Data{
 	DataStorage := []Data{}
 	for _, Column := range records {
 		if len(Column) != 6 {
-    		fmt.Println(Red + Bold + "Airport lookup malformed jsdh" + Reset)
+    		fmt.Println(Red + Bold + "Airport lookup malformed" + Reset)
     		os.Exit(0)
 		}
 		EachData := Data{
@@ -93,7 +93,7 @@ func GetIATACode(FileName string, Csv string) string {
 		for k := 0; k < len(alldata); k++ {
 			if(SingleRowIATA[i][1:] == alldata[k].iata_code){
 				if Malformed(alldata[k]) == true{
-					fmt.Println(Red + "Airport lookup malformed" + Reset)
+					fmt.Println(Red + Bold +"Airport lookup malformed" + Reset)
 					os.Exit(0)
 				}
 				FileName = strings.Replace(FileName, SingleRowIATA[i], alldata[k].name, 1)
