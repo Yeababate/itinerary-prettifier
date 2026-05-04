@@ -154,12 +154,15 @@ func ReadDate (OutPut string) string{
 	reDate := regexp.MustCompile(`D\((.*?)\)`)
 	Date := reDate.FindAllString(OutPut, -1)
 	for i := 0; i < len(Date); i ++ {
-		d, err := time.Parse("2006-01-02", Date[i][2:12])
-		if err != nil {
-			continue
+		if len(Date[i]) >= 12 {
+			
+			d, err := time.Parse("2006-01-02", Date[i][2:12])
+			if err != nil {
+				continue
+			}
+			FormatedDate := d.Format("02 Jan 2006")
+			OutPut = strings.Replace(OutPut, Date[i], FormatedDate, 1)
 		}
-		FormatedDate := d.Format("02 Jan 2006")
-		OutPut = strings.Replace(OutPut, Date[i], FormatedDate, 1)
 	}
 	return OutPut
 }
